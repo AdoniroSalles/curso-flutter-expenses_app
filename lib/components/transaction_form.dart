@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TransactionForm extends StatefulWidget {
   const TransactionForm({super.key, required this.onSubmit});
@@ -10,13 +11,13 @@ class TransactionForm extends StatefulWidget {
 }
 
 class _TransactionFormState extends State<TransactionForm> {
-  final titleController = TextEditingController();
-
-  final valueController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _valueController = TextEditingController();
+  DateTime? _selectedDate;
 
   _submitForm() {
-    final title = titleController.text;
-    final value = double.tryParse(valueController.text) ?? 0.0;
+    final title = _titleController.text;
+    final value = double.tryParse(_valueController.text) ?? 0.0;
 
     if (title.isEmpty || value <= 0) {
       return;
@@ -24,9 +25,26 @@ class _TransactionFormState extends State<TransactionForm> {
 
     //widget referencia o componente pai, é herdado de statefulwidget e permite acessar os atributos do pai
     widget.onSubmit(title, value);
-    
   }
 
+  _showDatePicker() {
+    //context recebido por herança do state
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return null;
+      }
+
+      //para alterar um dado em tela é necessário usar o setState
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,24 +56,51 @@ class _TransactionFormState extends State<TransactionForm> {
           children: [
             TextField(
               decoration: const InputDecoration(labelText: 'Título'),
-              controller: titleController,
+              controller: _titleController,
               onSubmitted: (_) => _submitForm(),
-
             ),
             TextField(
               decoration: const InputDecoration(labelText: 'Valor (R\$)'),
-              controller: valueController,
+              controller: _valueController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               onSubmitted: (_) => _submitForm(),
+            ),
+            Container(
+              height: 70,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? "Nenhuma data selecionada!"
+                          : 'Data Selecionada: ${DateFormat('dd/MM/y').format(_selectedDate!)}',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _showDatePicker,
+                    child: const Text(
+                      "Selecionar Data",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(
+                ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                  ),
+                  child: Text(
                     "Adicionar Transação",
-                    style: TextStyle(color: Colors.purple),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ],

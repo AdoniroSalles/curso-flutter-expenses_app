@@ -23,7 +23,7 @@ class ExpensesApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.purple,
+          backgroundColor: Colors.red[400],
           foregroundColor: Colors.white,
           titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
@@ -34,7 +34,7 @@ class ExpensesApp extends StatelessWidget {
         ),
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.amber,
-          primary: Colors.purple,
+          primary: Colors.red[400],
           secondary: Colors.amber,
         ),
       ),
